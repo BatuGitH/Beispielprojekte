@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Produktliste mit Filter und Sortierung</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+    .product {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .controls {
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      display: flex;
+    }
+    button {
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Produktliste</h1>
+  <button onclick="addProduct()">+ Produkt hinzufügen</button>
+  <div class="controls">
+    <button onclick="sortByPrice()">Nach Preis sortieren</button>
+    <button onclick="filterCategory('Elektronik')">Nur Elektronik</button>
+    <button onclick="filterCategory('Haushalt')">Nur Haushalt</button>
+    <button onclick="filterCategory('Sport')">Nur Sport</button>
+    <button onclick="filterCategory('Bücher')">Nur Bücher</button>
+    <button onclick="filterCategory('Küche')">Nur Küche</button>
+    <button onclick="filterCategory('Mode')">Nur Mode</button>
+    <button onclick="filterCategory('Spielzeug')">Nur Spielzeug</button>
+    <button onclick="filterCategory('Garten')">Nur Garten</button>
+    <button onclick="resetFilter()">Alle anzeigen</button>
+  </div>
+  <div id="product-list"></div>
+
+  <script>
+    let products = [
+      { name: 'Toaster', price: 29.99, category: 'Haushalt' },
+      { name: 'Smartphone', price: 499.00, category: 'Elektronik' },
+      { name: 'Kaffeemaschine', price: 89.95, category: 'Haushalt' },
+      { name: 'Bluetooth-Kopfhörer', price: 59.90, category: 'Elektronik' },
+      { name: 'Tennisschläger', price: 120.00, category: 'Sport' },
+      { name: 'Laufhose', price: 39.99, category: 'Mode' },
+      { name: 'Kochbuch', price: 19.90, category: 'Bücher' },
+      { name: 'Mixer', price: 55.50, category: 'Küche' },
+      { name: 'Jogginghose', price: 29.95, category: 'Mode' },
+      { name: 'Mountainbike', price: 599.00, category: 'Sport' },
+      { name: 'Kinderpuzzle', price: 14.99, category: 'Spielzeug' },
+      { name: 'Rasenmäher', price: 299.00, category: 'Garten' },
+      { name: 'LED Lampe', price: 12.50, category: 'Haushalt' },
+      { name: 'Laptop', price: 899.00, category: 'Elektronik' },
+      { name: 'Buch: Programmieren lernen', price: 24.90, category: 'Bücher' },
+      { name: 'Schneeschaufel', price: 19.99, category: 'Garten' },
+      { name: 'Damenjacke', price: 79.90, category: 'Mode' },
+      { name: 'Basketball', price: 25.00, category: 'Sport' },
+      { name: 'Spielwürfel', price: 9.99, category: 'Spielzeug' },
+      { name: 'Mikrowelle', price: 120.00, category: 'Küche' },
+      { name: 'Gartenschlauch', price: 29.90, category: 'Garten' },
+      { name: 'Kopfhörer', price: 89.90, category: 'Elektronik' },
+      { name: 'Backbuch', price: 17.90, category: 'Bücher' },
+      { name: 'Herrensocken', price: 12.00, category: 'Mode' },
+      { name: 'Fahrradhelm', price: 59.99, category: 'Sport' },
+      { name: 'Kinderspielzeug Auto', price: 19.95, category: 'Spielzeug' },
+      { name: 'Espressomaschine', price: 129.99, category: 'Küche' },
+      { name: 'Grill', price: 199.00, category: 'Garten' },
+      { name: 'Smartwatch', price: 299.00, category: 'Elektronik' },
+      { name: 'Romantischer Roman', price: 8.99, category: 'Bücher' },
+      { name: 'Herrenhemd', price: 34.95, category: 'Mode' },
+      { name: 'Yoga-Matte', price: 25.50, category: 'Sport' },
+      { name: 'Holzbausteine', price: 39.99, category: 'Spielzeug' }
+    ];
+
+    let filteredProducts = [...products];
+
+    function displayProducts(list) {
+      const container = document.getElementById('product-list');
+      container.innerHTML = '';
+      list.forEach((p, index) => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <div>
+            <strong>${p.name}</strong><br>
+            Preis: ${p.price.toFixed(2)} €<br>
+            Kategorie: ${p.category}
+          </div>
+          <button onclick="deleteProduct(${index})">Löschen</button>`;
+        container.appendChild(div);
+      });
+    }
+
+    function sortByPrice() {
+      filteredProducts.sort((a, b) => a.price - b.price);
+      displayProducts(filteredProducts);
+    }
+
+    function filterCategory(category) {
+      filteredProducts = products.filter(p => p.category === category);
+      displayProducts(filteredProducts);
+    }
+
+    function resetFilter() {
+      filteredProducts = [...products];
+      displayProducts(filteredProducts);
+    }
+
+    function deleteProduct(index) {
+      const item = filteredProducts[index];
+      const originalIndex = products.findIndex(p => p === item);
+      if (originalIndex > -1) {
+        products.splice(originalIndex, 1);
+        resetFilter();
+      }
+    }
+
+    function addProduct() {
+      const name = prompt("Produktname:");
+      const price = parseFloat(prompt("Preis in EUR:"));
+      const category = prompt("Kategorie:");
+      if (name && !isNaN(price) && category) {
+        products.push({ name, price, category });
+        resetFilter();
+      } else {
+        alert("Ungültige Eingabe. Produkt wurde nicht hinzugefügt.");
+      }
+    }
+    
+    displayProducts(products);
+  </script>
+</body>
+</html>
